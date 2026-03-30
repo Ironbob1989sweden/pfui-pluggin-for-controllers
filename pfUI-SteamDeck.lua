@@ -27,18 +27,18 @@ local textMapping = {
     ["s-7"] = "|cffffffccR4+<|r",
     ["s-8"] = "|cffffffccR4+>|r",
 
-        -- KOMBINATIONER (Exempel med r5/Shift som modifier)
+        -- KOMBINATIONER (Exempel med r5/ctrl som modifier)
     -- pfUI skriver oftast "s-1" för Shift+1, "c-1" för Ctrl+1
-    ["s-1"] = "|cff00ff00R5+A|r",
-    ["s-2"] = "|cffff0000R5+B|r",
-    ["s-3"] = "|cff5555ffR5+X|r",
-    ["s-4"] = "|cffffff00R5+Y|r",
+    ["c-1"] = "|cff00ff00R5+A|r",
+    ["c-2"] = "|cffff0000R5+B|r",
+    ["c-3"] = "|cff5555ffR5+X|r",
+    ["c-4"] = "|cffffff00R5+Y|r",
     
     -- D-PAD med modifier
-    ["s-5"] = "|cffffffccR5+^|r",
-    ["s-6"] = "|cffffffccR5+v|r",
-    ["s-7"] = "|cffffffccR5+<|r",
-    ["s-8"] = "|cffffffccR5+>|r",
+    ["c-5"] = "|cffffffccR5+^|r",
+    ["c-6"] = "|cffffffccR5+v|r",
+    ["c-7"] = "|cffffffccR5+<|r",
+    ["c-8"] = "|cffffffccR5+>|r",
 }
 
 local function ApplySteamDeckText()
