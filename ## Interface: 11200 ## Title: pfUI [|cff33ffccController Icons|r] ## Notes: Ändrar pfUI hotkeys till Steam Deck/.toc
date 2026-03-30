@@ -1,7 +1,0 @@
-## Interface: 11200
-## Title: pfUI [|cff33ffccController Icons|r]
-## Notes: Ändrar pfUI hotkeys till Steam Deck/Controller-symboler.
-## Author: Ironbob1989sweden
-## Dependencies: pfUI
-
-pfUI-pluggin-for-controllers.lua
