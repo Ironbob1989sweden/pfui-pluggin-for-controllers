@@ -7,8 +7,9 @@ This pfui pluggin adds some of the steam decks buttons to the spell menu.
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ab561b2c-a1e5-46a7-a2eb-afa5d191eca3" />
 My PFUI export code =)
-
-
+.
+-----------------------------------------
+.
 Y3AAZgBVAEkAXwBjAG8AbgBmAGkAZwAgAD0AIAB7AAoAIAAgAFsAIgBkAGkAcwBhAGIAbABlAGQAIgBdAAsBDQEPARAB
 EQEiAHMAawBpAG4AXwBBAHUAYwB0AGkABgFoAG8AdQBzAGUAHAEeASIAMAAiACwAIAEQARIBcABpAHgAZQBsAHAAZQBy
 AGYAZQArATQBDAE2ATgBOgEiASQBJgFfAFMAQgFsAGwAYgBvAG8AawBIASAASgE5ASEBTQElAScBTwBwACwBBgFzACAA
