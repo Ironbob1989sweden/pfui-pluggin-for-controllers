@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: pfUI [|cff33ffccSteamDeck|r]
+## Notes: Controller icons for pfUI actionbars.
+## Author: Ironbob1989sweden
+## Dependencies: pfUI
+
+pfUI-SteamDeck.lua
