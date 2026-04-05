@@ -60,7 +60,7 @@ title:SetPoint("TOP", 0, -10) title:SetText("Steam Deck Settings")
 
 -- Import Instructions
 local help = PFSD_Settings:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-help:SetPoint("TOP", 0, -35) help:SetText("1. Click 'Get String'\n2. Ctrl+C to copy code\n3. Open pfUI -> Profiles -> Import")
+help:SetPoint("TOP", 0, -35) help:SetText("1. Click 'Get String'\n2. Ctrl+C to copy code\n3. Open pfUI -> share -> replace code ->Import")
 
 -- The String Box (Hidden until button click)
 local editBox = CreateFrame("EditBox", "PFSD_ExportBox", PFSD_Settings, "InputBoxTemplate")
