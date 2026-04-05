@@ -77,7 +77,7 @@ end)
 
 -- Manual Import Section
 local help = PFSD_Settings:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-help:SetPoint("TOP", 0, -145) help:SetText("Copy this to pfUI -> share -> replace code -> Import")
+help:SetPoint("TOP", 0, -145) help:SetText("click get import string -> Copy this to pfUI -> share -> replace code -> Import")
 
 local editBox = CreateFrame("EditBox", "PFSD_ExportBox", PFSD_Settings, "InputBoxTemplate")
 editBox:SetWidth(200) editBox:SetHeight(30) editBox:SetPoint("TOP", 0, -170)
