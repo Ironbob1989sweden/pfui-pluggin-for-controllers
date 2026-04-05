@@ -73,139 +73,78 @@ local function Refresh()
     end
 end
 
--- 3. CREATE SETTINGS WINDOW
-local settings = CreateFrame("Frame", "PFSD_Settings", UIParent)
-settings:SetWidth(220)
-settings:SetHeight(280)
-settings:SetPoint("CENTER", 0, 0)
-settings:SetBackdrop({
-    bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-    tile = true, tileSize = 16, edgeSize = 16,
-    insets = { left = 3, right = 3, top = 3, bottom = 3 }
-})
-settings:SetBackdropColor(0, 0, 0, 0.9)
-settings:SetMovable(true)
-settings:EnableMouse(true)
-settings:RegisterForDrag("LeftButton")
-settings:SetScript("OnDragStart", function() this:StartMoving() end)
-settings:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
-settings:Hide()
+-- ... (Keep your existing variable declarations and UpdateButton function) ...
 
--- Title
-local title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-title:SetPoint("TOP", 0, -10)
-title:SetText("Steam Deck Settings")
+-- 3. CREATE SETTINGS WINDOW (Modified with Import Logic)
+-- [Inside your settings window creation block]
 
--- Close Button
-local close = CreateFrame("Button", nil, settings, "UIPanelCloseButton")
-close:SetPoint("TOPRIGHT", 2, 2)
-close:SetScript("OnClick", function() settings:Hide() end)
-
--- CHECKBOX: SHOW ICONS
-local check = CreateFrame("CheckButton", "PFSD_ShowIconsCheck", settings, "UICheckButtonTemplate")
-check:SetPoint("TOPLEFT", 20, -40)
-getglobal(check:GetName() .. 'Text'):SetText(" Show Action Bar Icons")
-check:SetChecked(pfUI_config.pfsd.show_icons)
-check:SetScript("OnClick", function()
-    pfUI_config.pfsd.show_icons = this:GetChecked()
-    Refresh()
-end)
-
--- SLIDER: SIZE
-local slider = CreateFrame("Slider", "PFSD_Slider", settings, "OptionsSliderTemplate")
-slider:SetPoint("TOP", 0, -100)
-slider:SetWidth(160)
-slider:SetMinMaxValues(10, 40)
-slider:SetValueStep(1)
-slider:SetValue(iconSize)
-getglobal(slider:GetName() .. 'Text'):SetText("Icon Size: " .. iconSize)
-slider:SetScript("OnValueChanged", function()
-    local val = math.floor(this:GetValue())
-    getglobal(this:GetName() .. 'Text'):SetText("Icon Size: " .. val)
-    pfUI_config.pfsd.icon_size = val
-    Refresh()
-end)
-
--- BUTTON: BINDS
-local bindBtn = CreateFrame("Button", nil, settings, "UIPanelButtonTemplate")
-bindBtn:SetWidth(180)
-bindBtn:SetHeight(25)
-bindBtn:SetPoint("TOP", 0, -150)
-bindBtn:SetText("Update Key binds")
-bindBtn:SetScript("OnClick", function()
-    for i=1, 8 do
-        SetBinding("SHIFT-"..i, "MULTIACTIONBAR1BUTTON"..i)
-        SetBinding("CTRL-"..i, "MULTIACTIONBAR2BUTTON"..i)
-    end
-    SaveBindings(GetCurrentBindingSet())
-    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Binds updated!")
-end)
-
--- BUTTON: EXPORT
+-- BUTTON: EXPORT (Existing)
 local exportBtn = CreateFrame("Button", nil, settings, "UIPanelButtonTemplate")
-exportBtn:SetWidth(180)
+exportBtn:SetWidth(90) -- Smaller to fit import next to it
 exportBtn:SetHeight(25)
-exportBtn:SetPoint("TOP", bindBtn, "BOTTOM", 0, -10)
-exportBtn:SetText("Copy pfUI Profile")
+exportBtn:SetPoint("TOPLEFT", bindBtn, "BOTTOMLEFT", 0, -10)
+exportBtn:SetText("Export")
 
+-- NEW BUTTON: IMPORT
+local importBtn = CreateFrame("Button", nil, settings, "UIPanelButtonTemplate")
+importBtn:SetWidth(90)
+importBtn:SetHeight(25)
+importBtn:SetPoint("LEFT", exportBtn, "RIGHT", 5, 0)
+importBtn:SetText("Import SD")
+
+-- THE EXPORT/IMPORT BOX
 local exportBox = CreateFrame("EditBox", "PFSD_ExportBox", settings)
-exportBox:SetHeight(20) exportBox:SetWidth(170)
+exportBox:SetHeight(60) -- Taller for easier pasting
+exportBox:SetWidth(180)
 exportBox:SetPoint("TOP", exportBtn, "BOTTOM", 0, -10)
 exportBox:SetFontObject(GameFontHighlightSmall)
+exportBox:SetMultiLine(true)
 exportBox:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1})
 exportBox:SetBackdropColor(0,0,0,1)
-exportBox:SetText("Y3AAZgBVAEkAXwBjAG8AbgBmAGkAZwAgAD0AIAB7AAoAIAAgAFsAIgBkAGkAcwBhAGIAbABlAGQAIgBdAAsBDQEPARAB
-EQEiAHQAbwB0AGUAbQBzABwBHgEiADAAIgAsACABEAESAXAAaQB4AGUAbABwAGUAcgBmAGUAYwB0ACoBDAEsAS4BMAEi
-AXMAawBpAG4AXwBNADkBYwBoAGEAbgA+AR0BQAEtAS8BIQFEAUYBSAFPAHAAdABpAAYBcwAgAC0AIABTAG8AdQBuABsB
-UQEgAEEBVAEhARIBRQFHAV8AWQFbAV0BXwEgAFYAaQBkAGUAbwA/AWgBUwFDARIBZAFsAG8AYwBrAHoBaQF9ASIABQFt
-AGIAbwBwAG8ARwF0ACkBZwGFAVUBEgEFAW8AbABkAG8AdwBuAIQBfAGTASIAgAElAZwBQgGeATsBCQFlAWUAYQB0AGgA
-ogFqATEBIwFhAHIAZwBlAFABKwGdAWsBIgBtAVgBWgFcAW4AXgFgAU4AZQB3AKwBhgG5AV8ARQB2ADkBoAFrACAAQgBy
-AG8AYQBkAGMAYQBzAFsBbgBnAMMBngFzAIEBaQBhAGwAbQBvAGYBtQGjAbcBbQBhAHAA2AG3AWEAPQG8AWIAsAHoAa4B
-xQFUAHIAYQBHATkB7wFWAW4BQgCwAWIAOQFzAGgAiwH3AWwBVwFfAFAAzgE7AXMAcwC8AQECIwFvAJYBWwHnAZEBtgHw
-AQMCVADdAWUATwGQAeIBrQEiAQgBcgDUAXIAZAELAmgAZABnAPMBcABoAGkAYwCEATEA4wGuAXAAbABhAHkA9gERAi0C
-+AFIAUcAbwAIAmkAcAAgAE4BZAAgAFEAdQBlANQBCwJ1AHAAZACpARcCJQFpAGYAeQAiAmQBJgFyAO0BcgALAsUBUgD0
-AWQAAgFFAm4AaQB0AHgAEAIaAsQBAwJBAikCawBIAKgBbABVAgMCUACLAUYCIABEANwBgAFnABkCUgE1AgICbgFDAJYB
-bwByACAAUABlAjMCYQKeAWIAdQBmAGYAdwCpAUwBagJ4Ak0B8wE9AYACdQIbAhIB5QFwAHIAZQDIAd0BCwLtAXMCKwJ2
-ArgBAwL6AXMCaAB1AGkACwJMAakBCwJhAHUAJAH+AUwCtAGQAmICbgFEAJUCCAIgAFUAPAJGAPMBbQBlAAsCdAB1AHIA
-dAAZAS0AdwCZAYoCSAH6AXQAwAJlAAgBNgHhAa8CngGqAWkAcgBkAHAAsAF0AHkALQB2AE4BaQBsADACCwLzAXYBxQJf
-AEkAvQE4AT0BIgJvAMgBUgJHAc0CewGdAmYAgQF1AHQC7QKRAp4CbgFQALMBXQIKAjQC9ALFAUcAowKXASAAUgBlAGcA
-FQF0APMBVAL7ArACSAFTAHQA6gHLAVMALwJdAuECZwI3AeECVAC+AskCYQH/AWACzgK3AQ0DsQGzAR8DsgGuAvMCxAE2
-AWwA2QJsAEICFgPzAb0B3wHXAQkD2QEDAlkB6gFdAk4CMQO3AWIAcwIFAZUC4QJBAHUA6wEGAf8B8QK7AjgDEwJuARcD
-JAFyAHEC4QJwAbwBvgEgAOMCUQJmAOoBRQOBAuQB0QLOAb8CaQC6Ah4C4QJNAOoBzgFVAowCVgMdA0cDSAH3AnQAYQEN
-AxgBZQAgAGAD1AGPAiUDggKEAmYAqAKqAugCFwKYAQgDVwOuAYMCYgBtA/ICkgG3AfEBGAMZAWAD2wLhAkIADQJrAIID
-EgIiAagBcQOVAmcAMAN9AzYCXwB5AkcBfQJlAkYCigOpAckCywIAA00ARwFcA+YBRQJmAF8AvQJrAKMCxQIsA9ABZQNz
-A7cBJQJ5ACcCXQELAm4AYQBtAIwBdwByA4MDrgGAAdIBcQFuAC8C8QILAkcBCAFnAGgAJAO+A5cDuAJpAHoDjgOdAl8C
-UwKoAmQAmAG9AdUD1wODAsgCtgNGAyIB5QFjAM4BdAC8A2EAgwHeA34BbgDxAhcBGQEWA4YDbgNMAEYAVAC8AigC0gLU
-Ar8CNwOWAxIBdwAoAnMAOAFyAJQCbwB4APgDZgOXA0cAuQNuA0oB6QPhAksAZQB5AEIA6wJHAZsC5wMiAGcAbQALApMC
-BQGAAV4DEwRlAHEAiAH2A7ADzAMSARcCOQFnAHkAWwGCAVUC4QNlABcC/gGhARME0AHXAx8EpwITBM4B3ALhAkECQwJq
-A0wAbwCVAwQEEgElAmMBHAOxA64BVANyAG0A3wF3AQsCOAHLA48DkgKkA5MCFwRjAXMAeAHpAgsCcQBCAtQBXQInAZkC
-IQM5ASQBJgEoAeEC/gLbAj8CFQJTAuwCIgT1AsYCnwMZAaEDPwJTADwDIQROBGsEXwAQAycDigFvAOYD+QOHAU0BdAAF
-AXAAAwREBJcDOQTUASAAVABcA70DdATUAm4ANgHZA10BVwGNBHwDPwQiALgDugIvAkkCggMsAvQC0gHUAdQDEwTFAYgD
-bACKAXgAvAKwASMDIgMhA6cEswFLBKoEIANNBJ0CxQFGAGwACQHKA+UBkgPGA2EEYwC0BCkEMARmAGsA0gEWBBMEYwDx
-AiQBwgR8BFYCqAFkAHkATAE8AXsElARzAEYCOQHDAsIBoAQUAg0CbAAPAtED9AIGAw4DEQRjBE0AYQG+AsgBggSDA30A
-agGUAX4EegEOAZ4BZwCAAe0BaQJnAewEVQEiAYoB0gKKBC4AMQAsADAA+QT7BP0E/AQ1ADUCrgHEBNQBbwCJAT4EaAGb
-BEMBfgMOA0EEZAFpBPwE+gQRBf4EEgUuADIANQLnBIYBJgF4ACQD8wSeAUcBcACqAl8AdwB2AaoBhAEzADAAjwMZBZ4B
-SwPJAx0FCwWQA7gDbQOcAhsCKwUgADYFMgFmAHMA7AIeBSIBKQIGAV8ACQJ6ALADMQA0AGoBOAWfAYEBxAPyAj0FIwQy
-BRkBRwGIAe0BywMKBSwFtQR/BA0C0gJHAUkCZgC5AsEBJQWrAZEBMgA3AJ0CbgR0AEgCDQOMBMwCqQFJAhwFhAFkAL4C
-FwHbAjYDnQIXAusDswEtA/0DsAEXAlQFZQWBAakBvAFdBQcEaABlAFcFKwJkBfQCZgVoBeYBTgE2ASQFZAAmBZEBMQAp
-BXUFTwU5ATwBBgW6AqcBZAB6AAYBQwI0BYYBLQXKA4sFagVsAIQFhgWSBTMAnQIZBHsCGgHUAakB8QLAA4AFBgELAnYF
-bQOkA70BDQNuAGMAIQRVBbcBZgWVAVoFuAMmAYIFugKnBS4FKwKqBfQCogVnBWwFpQWLBRsFywNbAboCfgXBA4EFXgWP
-BZEFKwFjBXQEwAVZBRQBwwXKAl4FtgXsA5IFZQXKAlgFewLgBVwF2AVgBYQBYwWVBXcF/gHQAcQC5gXLBVcFwQXrBcQF
-XgXHBcoDyQWdAswF+QVbBfsFBwTkBb0FAAZXBaQFjQUZAZYFoAWeAYoFzgULBv0FVAXKBYYBBgaVAogBmgV3AeAFrwW7
-BZ8F9gWGARAGaQULBgYGDga3AcwFCgaNBGwA2QVhBSsBkwW2AUgFUwJMBYYBUwKqBfIEMAUSAe8CRwRUAz0BewIrAiAA
-eAAgADEAFwUbAq4BZAGWAhcChAFEAJkBmwE1BfQCUwI4AOsEOAYiAEcGyAGbAZEBSwaaARgFTwawATkAUgb0BCIBVQZJ
-BlgGTAZbBjQGsAEsAjcGYAZsAf8BdwBrAA0EYgDrAvcBfgOqAiQB2AORAVEGRQY+BQUBSAFCBSEEKAUCBWEGjQRWBkoG
-ZQZOBoYBbwZ5AJgBWgYgBoICsAFkBWoG9AToA0gGVwYrAVkGTQZDATYFDAVyAEMGXwaSBlQGgwZjBpYGhgaZBlwGnAYt
-AZEGngFiBpUGQAGXBmYGjgZyABcFqQa3AasGhQZaBocGsAY2AJ4G2QFtBokGcQZlAXMG9QR1Bt0DKwF5BlMGPwV9BmkA
-QwUnBY8DRgahBqwGaAGuBrgGOQOwAQEFswbwAb0GcAZyBt4DdAbcA3cGxQaBBhIByAZBBcoGfwbNBhwCewJtADwGSgMr...")
+exportBox:SetText("PASTE CODE HERE")
 exportBox:SetScript("OnEditFocusGained", function() this:HighlightText() end)
 exportBox:Hide()
 
+-- Logic for Export Button
 exportBtn:SetScript("OnClick", function()
-    if exportBox:IsShown() then exportBox:Hide() else exportBox:Show() exportBox:SetFocus() end
+    if exportBox:IsShown() then exportBox:Hide() else 
+        exportBox:Show() 
+        -- Fill with current string if you want to export
+        exportBox:SetText("Y3AAZgBVAEkAXwBjAG8AbgBmAGkAZwAgAD0AIAB7...") 
+        exportBox:SetFocus() 
+    end
 end)
 
+-- Logic for Import Button
+importBtn:SetScript("OnClick", function()
+    if not exportBox:IsShown() then
+        exportBox:Show()
+        exportBox:SetText("")
+        exportBox:SetFocus()
+        DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Paste code into the box and click Import again.")
+        return
+    end
+
+    local rawData = exportBox:GetText()
+    
+    -- Use pfUI's built-in decoder if available
+    -- Note: pfUI uses 'pfUI.api.Base64Decode' and 'loadstring'
+    if pfUI and pfUI.api and pfUI.api.Base64Decode then
+        local decoded = pfUI.api.Base64Decode(rawData)
+        local func = loadstring(decoded)
+        if func then
+            func() -- This executes the "pfUI_config = ..." script inside the string
+            DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Profile Imported! Reloading UI...")
+            ReloadUI()
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Error: Invalid Profile Data.")
+        end
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Error: pfUI API not found.")
+    end
+end)
+
+-- ... (Rest of your Slash Command and Refresh Loop) ...
 -- 4. SLASH COMMAND
 SLASH_PFSD1 = "/pfsd"
 SlashCmdList["PFSD"] = function()
