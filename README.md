@@ -12,11 +12,9 @@ its binded to left R4
 If u want all my controls and menus.
 Name your game to 
 </br>
-<br>
-If u dont finde it u can download it here and put it in to this location 
+<br> 
 </br>
 <br>
-/home/deck/.local/share/Steam/steamapps/common/Steam Controller Configs/16372876/config/turtlewow
 <br>
 </br>
 <br>
@@ -31,6 +29,13 @@ search for ironbob
 <img width="259" height="252" alt="image" src="https://github.com/user-attachments/assets/9d34bbb3-d50d-4028-a055-e6c8ef4fcd9c" />
 </br>
 <br>
+<br>
+If u dont finde it u can download it here and put it in to this location 
+</br>
+<br>
+/home/deck/.local/share/Steam/steamapps/common/Steam Controller Configs/16372876/config/turtlewow
+<br>
+</br>
 
 
 
