@@ -3,5 +3,5 @@
 ## Notes: Controller icons for pfUI actionbars.
 ## Author: Ironbob1989sweden
 ## Dependencies: pfUI
-## Version: 3.4.1
+## Version: Beta 0.0.1
 pfUI-SteamDeck.lua
