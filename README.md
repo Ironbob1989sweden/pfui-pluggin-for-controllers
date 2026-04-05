@@ -19,7 +19,10 @@ This pfui pluggin adds some of the steam decks buttons to the spell menu.</br>
 </br>
 <br>CTRL 1-8 for top line
 </br>
-<br><img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/c05af0f6-ffdc-4e03-8475-1306782eda44" />
+<br><img width="426" height="382" alt="image" src="https://github.com/user-attachments/assets/10a35d91-787d-4158-8a2f-68f9c9b2f211" />
+</br>
+<br>
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/c05af0f6-ffdc-4e03-8475-1306782eda44" />
 </br>
 <br>
 <img width="1280" height="794" alt="image" src="https://github.com/user-attachments/assets/f65b69db-172e-4429-b045-43b14d51092b" />
