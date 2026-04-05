@@ -11,6 +11,14 @@ its binded to left R4
 </br>
 If u want all my controls and menus.
 Name your game to 
+</br>
+<br>
+If u dont finde it u can download it here and put it in to this location 
+</br>
+<br>
+/home/deck/.local/share/Steam/steamapps/common/Steam Controller Configs/16372876/config/turtlewow
+<br>
+</br>
 <br>
 <img width="616" height="123" alt="image" src="https://github.com/user-attachments/assets/41c54672-09a3-4e6c-96af-87928d9d3d89" />
 </br>
