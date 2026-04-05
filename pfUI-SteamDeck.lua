@@ -1,28 +1,33 @@
 local addonName = "pfUI-SteamDeck"
 local iconPath = "Interface\\AddOns\\" .. addonName .. "\\tga\\"
 
--- 1. HÄMTA SPARAD STORLEK (Eller använd 14 som standard)
+-- 1. INITIALIZE CONFIG (Nu med 'true' som standard för show_icons)
 pfUI_config = pfUI_config or {}
-pfUI_config.pfsd = pfUI_config.pfsd or { icon_size = 14 }
+pfUI_config.pfsd = pfUI_config.pfsd or {}
+if pfUI_config.pfsd.show_icons == nil then pfUI_config.pfsd.show_icons = true end
+if pfUI_config.pfsd.icon_size == nil then pfUI_config.pfsd.icon_size = 14 end
+
 local iconSize = pfUI_config.pfsd.icon_size
 
-local buttonIcons = {
-    [1] = "y", [2] = "x", [3] = "a", [4] = "b",
-    [5] = "up", [6] = "left", [7] = "down", [8] = "right",
-}
-
+-- 2. UPDATE BUTTON FUNCTION
 local function UpdateButton(btn, iconFile, modFile)
     if not btn or not btn:GetName() then return end
 
-    -- 2. DÖDA pfUI TEXT
-    local hk = getglobal(btn:GetName().."HotKey")
-    if hk then hk:SetAlpha(0) end
-
-    -- 3. SKAPA/HÄMTA TEXTURER
     local mainTex = getglobal(btn:GetName().."FinalMain") or btn:CreateTexture(btn:GetName().."FinalMain", "OVERLAY")
     local modTex = getglobal(btn:GetName().."FinalMod") or btn:CreateTexture(btn:GetName().."FinalMod", "OVERLAY")
 
-    -- 4. RITA MODIFIER (R4/R5)
+    -- Hide default pfUI hotkey text
+    local hk = getglobal(btn:GetName().."HotKey")
+    if hk then hk:SetAlpha(0) end
+
+    -- GLOBAL TOGGLE: If "Show Icons" is unchecked, hide everything and stop
+    if not pfUI_config.pfsd.show_icons then
+        mainTex:Hide()
+        modTex:Hide()
+        return
+    end
+
+    -- Draw Modifier (R4/R5)
     if modFile then
         modTex:SetTexture(iconPath .. modFile .. ".tga")
         modTex:SetWidth(iconSize)
@@ -33,7 +38,7 @@ local function UpdateButton(btn, iconFile, modFile)
         modTex:Hide()
     end
 
-    -- 5. RITA KNAPP (A/B/X/Y)
+    -- Draw Primary Button (A/B/X/Y)
     if iconFile then
         mainTex:SetTexture(iconPath .. iconFile .. ".tga")
         mainTex:SetWidth(iconSize)
@@ -50,10 +55,13 @@ local function UpdateButton(btn, iconFile, modFile)
     end
 end
 
-local function Refresh()
-    -- Uppdatera iconSize från config innan vi ritar
-    iconSize = pfUI_config.pfsd.icon_size
+local buttonIcons = {
+    [1] = "y", [2] = "x", [3] = "a", [4] = "b",
+    [5] = "up", [6] = "left", [7] = "down", [8] = "right",
+}
 
+local function Refresh()
+    iconSize = pfUI_config.pfsd.icon_size
     for i=1, 12 do
         local m = getglobal("pfActionBarMainButton"..i)
         local l = getglobal("pfActionBarLeftButton"..i)
@@ -65,21 +73,10 @@ local function Refresh()
     end
 end
 
--- 6.1 SKAPA INSTÄLLNINGSFÖNSTRET (/pfsd)
--- Slash kommando (Viktigt: PFSD i versaler)
-DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r ironbobs pfui pluggin is loaded typ /pfsd for Settings")
-SLASH_PFSD1 = "/pfsd"
-SlashCmdList["PFSD"] = function()
-    if PFSD_Settings:IsShown() then
-        PFSD_Settings:Hide()
-    else
-        PFSD_Settings:Show()
-    end
-end
--- 6. SKAPA INSTÄLLNINGSFÖNSTRET (/pfsd)
+-- 3. CREATE SETTINGS WINDOW
 local settings = CreateFrame("Frame", "PFSD_Settings", UIParent)
-settings:SetWidth(200)
-settings:SetHeight(180) -- Gjorde fönstret högre (från 100 till 180)
+settings:SetWidth(220)
+settings:SetHeight(280)
 settings:SetPoint("CENTER", 0, 0)
 settings:SetBackdrop({
     bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -95,73 +92,91 @@ settings:SetScript("OnDragStart", function() this:StartMoving() end)
 settings:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
 settings:Hide()
 
--- Titel
-local title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+-- Title
+local title = settings:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 title:SetPoint("TOP", 0, -10)
-title:SetText("Steam Deck Inställningar")
+title:SetText("Steam Deck Settings")
 
--- Stängknapp
-local close = CreateFrame("Button", "PFSD_CloseButton", settings, "UIPanelCloseButton")
+-- Close Button
+local close = CreateFrame("Button", nil, settings, "UIPanelCloseButton")
 close:SetPoint("TOPRIGHT", 2, 2)
 close:SetScript("OnClick", function() settings:Hide() end)
 
--- Slider
-local slider = CreateFrame("Slider", "PFSD_Slider", settings, "OptionsSliderTemplate")
-slider:SetPoint("TOP", 0, -45)
-slider:SetWidth(150)
-slider:SetMinMaxValues(10, 40)
-slider:SetValueStep(1)
-slider:SetValue(iconSize)
-getglobal(slider:GetName() .. 'Text'):SetText("Storlek: " .. iconSize)
-slider:SetScript("OnValueChanged", function()
-    local val = math.floor(this:GetValue())
-    getglobal(this:GetName() .. 'Text'):SetText("Storlek: " .. val)
-    pfUI_config.pfsd.icon_size = val
-    iconSize = val
+-- CHECKBOX: SHOW ICONS
+local check = CreateFrame("CheckButton", "PFSD_ShowIconsCheck", settings, "UICheckButtonTemplate")
+check:SetPoint("TOPLEFT", 20, -40)
+getglobal(check:GetName() .. 'Text'):SetText(" Show Action Bar Icons")
+check:SetChecked(pfUI_config.pfsd.show_icons)
+check:SetScript("OnClick", function()
+    pfUI_config.pfsd.show_icons = this:GetChecked()
     Refresh()
 end)
 
--- FUNKTION FÖR ATT BINDA KNAPPAR
-local function BindSteamDeckKeys()
-    -- Actionbar Top (pfUI Top Bar knappar 1-8) -> SHIFT-1 till SHIFT-8
-    -- I pfUI heter knapparna internt MULTIACTIONBAR1BUTTON1 osv för binds
+-- SLIDER: SIZE
+local slider = CreateFrame("Slider", "PFSD_Slider", settings, "OptionsSliderTemplate")
+slider:SetPoint("TOP", 0, -100)
+slider:SetWidth(160)
+slider:SetMinMaxValues(10, 40)
+slider:SetValueStep(1)
+slider:SetValue(iconSize)
+getglobal(slider:GetName() .. 'Text'):SetText("Icon Size: " .. iconSize)
+slider:SetScript("OnValueChanged", function()
+    local val = math.floor(this:GetValue())
+    getglobal(this:GetName() .. 'Text'):SetText("Icon Size: " .. val)
+    pfUI_config.pfsd.icon_size = val
+    Refresh()
+end)
+
+-- BUTTON: BINDS
+local bindBtn = CreateFrame("Button", nil, settings, "UIPanelButtonTemplate")
+bindBtn:SetWidth(180)
+bindBtn:SetHeight(25)
+bindBtn:SetPoint("TOP", 0, -150)
+bindBtn:SetText("Update Key binds")
+bindBtn:SetScript("OnClick", function()
     for i=1, 8 do
         SetBinding("SHIFT-"..i, "MULTIACTIONBAR1BUTTON"..i)
-    end
-
-    -- Actionbar Left (pfUI Left Bar knappar 1-8) -> CTRL-1 till CTRL-8
-    for i=1, 8 do
         SetBinding("CTRL-"..i, "MULTIACTIONBAR2BUTTON"..i)
     end
+    SaveBindings(GetCurrentBindingSet())
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Binds updated!")
+end)
 
-    SaveBindings(GetCurrentBindingSet()) -- Sparar ändringarna permanent
-    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Keybinds uppdaterade! (SHIFT 1-8 & CTRL 1-8)")
+-- BUTTON: EXPORT
+local exportBtn = CreateFrame("Button", nil, settings, "UIPanelButtonTemplate")
+exportBtn:SetWidth(180)
+exportBtn:SetHeight(25)
+exportBtn:SetPoint("TOP", bindBtn, "BOTTOM", 0, -10)
+exportBtn:SetText("Copy pfUI Profile")
+
+local exportBox = CreateFrame("EditBox", "PFSD_ExportBox", settings)
+exportBox:SetHeight(20) exportBox:SetWidth(170)
+exportBox:SetPoint("TOP", exportBtn, "BOTTOM", 0, -10)
+exportBox:SetFontObject(GameFontHighlightSmall)
+exportBox:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1})
+exportBox:SetBackdropColor(0,0,0,1)
+exportBox:SetText("Y3AAZgBVAEkAXwBjAG8AbgBmAGkAZwAgAD0AIAB7...")
+exportBox:SetScript("OnEditFocusGained", function() this:HighlightText() end)
+exportBox:Hide()
+
+exportBtn:SetScript("OnClick", function()
+    if exportBox:IsShown() then exportBox:Hide() else exportBox:Show() exportBox:SetFocus() end
+end)
+
+-- 4. SLASH COMMAND
+SLASH_PFSD1 = "/pfsd"
+SlashCmdList["PFSD"] = function()
+    if settings:IsShown() then settings:Hide() else settings:Show() end
 end
 
--- KNAPP FÖR ATT AKTIVERA BINDS
-local bindBtn = CreateFrame("Button", "PFSD_BindButton", settings, "UIPanelButtonTemplate")
-bindBtn:SetWidth(160)
-bindBtn:SetHeight(25)
-bindBtn:SetPoint("TOP", 0, -85)
-bindBtn:SetText("Binde")
-bindBtn:SetScript("OnClick", function()
-    BindSteamDeckKeys()
+-- 5. REFRESH LOOP
+local f = CreateFrame("Frame")
+f:SetScript("OnUpdate", function()
+    this.elapsed = (this.elapsed or 0) + arg1
+    if this.elapsed > 2 then
+        Refresh()
+        this.elapsed = 0
+    end
 end)
 
--- INFO TEXT
-local info = settings:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-info:SetPoint("TOP", bindBtn, "BOTTOM", 0, -10)
-info:SetWidth(180)
-info:SetText("This will binde rebinde your SHIFT/CTRL 1-8 binds.")
--- 7. STARTA LOOPEN (Din original-loop)
-local f = CreateFrame("Frame")
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
-f:SetScript("OnEvent", function()
-    this:SetScript("OnUpdate", function()
-        this.elapsed = (this.elapsed or 0) + arg1
-        if this.elapsed > 2 then
-            Refresh()
-            this.elapsed = 0
-        end
-    end)
-end)
+DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99pfUI-SD:|r Loaded. Type /pfsd for settings.")
