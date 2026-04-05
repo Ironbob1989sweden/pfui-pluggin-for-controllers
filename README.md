@@ -11,10 +11,12 @@ This pfui pluggin adds some of the steam decks buttons to the spell menu.</br>
 4.Open it and replace the file now u got my layout</br>
 <br>
 </br>
-<br>when ingame typ /pfsd 
+<br>When ingame typ /pfsd 
 </br>
-<br>from here u can copy keybinds for line 
+<br>From here u can copy keybinds for line 
 </br>
+
+<br>U can also copy my pfui code</br>
 <br>SHIFT 1-8 for top line 
 </br>
 <br>CTRL 1-8 for top line
